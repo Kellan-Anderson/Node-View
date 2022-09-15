@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8" />
+<style>
+  .links line {
+    stroke: #999;
+    stroke-opacity: 0.6;
+  }
+
+  .nodes circle {
+    stroke: #fff;
+    stroke-width: 1.5px;
+  }
+
+</style>
+<svg width="960" height="600"></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+  // grab the svg
+  var svg = d3.select("svg");
+  var width = svg.attr("width");
+  var height = svg.attr("height");
+
+  // create graph
+  var graph = {
+    nodes: [
+      { name: "node1" },
+      { name: "node2" },
+      { name: "node3" },
+      { name: "node4" },
+      { name: "node5" },
+      { name: "node6" },
+      { name: "node7" },
+      { name: "node8" }
+    ],
+    links: [
+      { source: "node1", target: "node2" },
+      { source: "node3", target: "node2" },
+      { source: "node4", target: "node3" },
+      { source: "node5", target: "node4" },
+      { source: "node1", target: "node3" },
+      { source: "node3", target: "node5" },
+      { source: "node6", target: "node5" },
+      { source: "node7", target: "node6" },
+      { source: "node8", target: "node7" },
+      { source: "node5", target: "node8" }
+    ]
+  };
+
+  var simulation = d3
+    .forceSimulation(graph.nodes)
+    .force(
+      "link",
+      d3
+        .forceLink()
+        .id(function(d) {
+          return d.name;
+        })
+        .links(graph.links)
+    )
+
+    .force("charge", d3.forceManyBody().strength(-30))
+    .force("center", d3.forceCenter(width / 2, height / 2))
+    .on("tick", ticked);
+
+  var link = svg
+    .append("g")
+    .attr("class", "links")
+    .selectAll("line")
+    .data(graph.links)
+    .enter()
+    .append("line")
+    .attr("stroke-width", function(d) {
+      return 3;
+    });
+
+  var node = svg
+    .append("g")
+    .attr("class", "nodes")
+    .selectAll("circle")
+    .data(graph.nodes)
+    .enter()
+    .append("circle")
+    .attr("r", 5)
+    .attr("fill", function(d) {
+      return "red";
+    })
+    .call(
+      d3
+        .drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended)
+    );
+
+  function ticked() {
+    link
+      .attr("x1", function(d) {
+        return d.source.x;
+      })
+      .attr("y1", function(d) {
+        return d.source.y;
+      })
+      .attr("x2", function(d) {
+        return d.target.x;
+      })
+      .attr("y2", function(d) {
+        return d.target.y;
+      });
+
+    node
+      .attr("cx", function(d) {
+        return d.x;
+      })
+      .attr("cy", function(d) {
+        return d.y;
+      });
+  }
+
+  function dragstarted(d) {
+    if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+    d.fx = d.x;
+    d.fy = d.y;
+  }
+
+  function dragged(d) {
+    d.fx = d3.event.x;
+    d.fy = d3.event.y;
+  }
+
+  function dragended(d) {
+    if (!d3.event.active) simulation.alphaTarget(0);
+    d.fx = null;
+    d.fy = null;
+  }
+
+</script>
