@@ -22,113 +22,88 @@
   var width = svg.attr("width");
   var height = svg.attr("height");
 
-  // create graph of empty nodes
-  var graph = {
-    nodes: [
-      { name: "node1" },
-      { name: "node2" },
-      { name: "node3" },
-      { name: "node4" },
-      { name: "node5" },
-      { name: "node6" },
-      { name: "node7" },
-      { name: "node8" }
-    ],
-    links: [ // create edges between nodes
-      { source: "node1", target: "node2" },
-      { source: "node3", target: "node2" },
-      { source: "node4", target: "node3" },
-      { source: "node5", target: "node4" },
-      { source: "node1", target: "node3" },
-      { source: "node3", target: "node5" },
-      { source: "node6", target: "node5" },
-      { source: "node7", target: "node6" },
-      { source: "node8", target: "node7" },
-      { source: "node5", target: "node8" }
-    ]
-  };
-  // TODO: - Create nodes from dataset next sprint
-  // 	   - Allow nodes to contain traits 
+  d3.json("~/Code/Capstone/frontend/src/test.json/", function(error, graph) {
+    if (error) throw error;
 
+    // Assign x,y and vx,vy (velocity) coordinates to each node in array 
+    var simulation = d3
+      .forceSimulation(graph.nodes)
+      .force(
+        "link",
+        d3
+          .forceLink()
+          .id(function(d) {
+            return d.name;
+          })
+          .links(graph.links)
+      )
 
-  // Assign x,y and vx,vy (velocity) coordinates to each node in array 
-  var simulation = d3
-    .forceSimulation(graph.nodes)
-    .force(
-      "link",
-      d3
-        .forceLink()
-        .id(function(d) {
-          return d.name;
+      // How much force is required to drag the nodes
+      .force("charge", d3.forceManyBody().strength(-30))   
+
+      // How much force is required to shrink or expand the center
+      .force("center", d3.forceCenter(width / 2, height / 2))
+      .on("tick", ticked);
+
+    var link = svg // Create vector graphics for every link between nodes
+      .append("g")
+      .attr("class", "links")
+      .selectAll("line")
+      .data(graph.links)
+      .enter()
+      .append("line")
+      .attr("stroke-width", function(d) {
+        return 3;
+      });
+
+    // TODO:  In future iterations a function will be put in place to assign
+    //        -  blue -> licit transaction
+    //        -  red -> illicit transaction
+
+    var node = svg // Create vector graphics for every node
+      .append("g")
+      .attr("class", "nodes")
+      .selectAll("circle")
+      .data(graph.nodes)
+      .enter()
+      .append("circle")
+      .attr("r", 5)
+      .attr("fill", function(d) {
+        return "red";
+      })
+      .call(       // Call d3's drag api to initialize actions
+        d3
+          .drag()
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended)
+      );
+ 
+    // If a node is clicked on, assign movement attributes
+    function ticked() {
+      link
+        .attr("x1", function(d) {
+          return d.source.x;
         })
-        .links(graph.links)
-    )
+        .attr("y1", function(d) {
+          return d.source.y;
+        })
+        .attr("x2", function(d) {
+          return d.target.x;
+        })
+        .attr("y2", function(d) {
+          return d.target.y;
+        });
 
-    // How much force is required to drag the nodes
-    .force("charge", d3.forceManyBody().strength(-30))   
-
-    // How much force is required to shrink or expand the center
-    .force("center", d3.forceCenter(width / 2, height / 2))
-    .on("tick", ticked);
-
-  var link = svg // Create vector graphics for every link between nodes
-    .append("g")
-    .attr("class", "links")
-    .selectAll("line")
-    .data(graph.links)
-    .enter()
-    .append("line")
-    .attr("stroke-width", function(d) {
-      return 3;
-    });
-
-  // TODO:  In future iterations a function will be put in place to assign
-  //        -  blue -> licit transaction
-  //        -  red -> illicit transaction
-
-  var node = svg // Create vector graphics for every node
-    .append("g")
-    .attr("class", "nodes")
-    .selectAll("circle")
-    .data(graph.nodes)
-    .enter()
-    .append("circle")
-    .attr("r", 5)
-    .attr("fill", function(d) {
-      return "red";
-    })
-    .call(       // Call d3's drag api to initialize actions
-      d3
-        .drag()
-        .on("start", dragstarted)
-        .on("drag", dragged)
-        .on("end", dragended)
-    );
-  
-  // If a node is clicked on, assign movement attributes
-  function ticked() {
-    link
-      .attr("x1", function(d) {
-        return d.source.x;
-      })
-      .attr("y1", function(d) {
-        return d.source.y;
-      })
-      .attr("x2", function(d) {
-        return d.target.x;
-      })
-      .attr("y2", function(d) {
-        return d.target.y;
-      });
-
-    node
-      .attr("cx", function(d) {
-        return d.x;
-      })
-      .attr("cy", function(d) {
-        return d.y;
-      });
-  }
+      node
+        .attr("cx", function(d) {
+          return d.x;
+        })
+        .attr("cy", function(d) {
+          return d.y;
+        });
+    }
+  });
 
   // If node is clicked on, restart drag event
   function dragstarted(d) {
