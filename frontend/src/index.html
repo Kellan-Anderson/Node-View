@@ -2,6 +2,7 @@
 
 <meta charset="utf-8" />
 <style>
+
   .links line {
     stroke: #999;
     stroke-opacity: 0.6;
@@ -17,12 +18,11 @@
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 
-  // grab the svg
   var svg = d3.select("svg");
   var width = svg.attr("width");
   var height = svg.attr("height");
 
-  // create graph
+  // create graph of empty nodes
   var graph = {
     nodes: [
       { name: "node1" },
@@ -34,7 +34,7 @@
       { name: "node7" },
       { name: "node8" }
     ],
-    links: [
+    links: [ // create edges between nodes
       { source: "node1", target: "node2" },
       { source: "node3", target: "node2" },
       { source: "node4", target: "node3" },
@@ -47,7 +47,11 @@
       { source: "node5", target: "node8" }
     ]
   };
+  // TODO: - Create nodes from dataset next sprint
+  // 	   - Allow nodes to contain traits 
 
+
+  // Assign x,y and vx,vy (velocity) coordinates to each node in array 
   var simulation = d3
     .forceSimulation(graph.nodes)
     .force(
@@ -60,11 +64,14 @@
         .links(graph.links)
     )
 
-    .force("charge", d3.forceManyBody().strength(-30))
+    // How much force is required to drag the nodes
+    .force("charge", d3.forceManyBody().strength(-30))   
+
+    // How much force is required to shrink or expand the center
     .force("center", d3.forceCenter(width / 2, height / 2))
     .on("tick", ticked);
 
-  var link = svg
+  var link = svg // Create vector graphics for every link between nodes
     .append("g")
     .attr("class", "links")
     .selectAll("line")
@@ -75,7 +82,11 @@
       return 3;
     });
 
-  var node = svg
+  // TODO:  In future iterations a function will be put in place to assign
+  //        -  blue -> licit transaction
+  //        -  red -> illicit transaction
+
+  var node = svg // Create vector graphics for every node
     .append("g")
     .attr("class", "nodes")
     .selectAll("circle")
@@ -86,14 +97,15 @@
     .attr("fill", function(d) {
       return "red";
     })
-    .call(
+    .call(       // Call d3's drag api to initialize actions
       d3
         .drag()
         .on("start", dragstarted)
         .on("drag", dragged)
         .on("end", dragended)
     );
-
+  
+  // If a node is clicked on, assign movement attributes
   function ticked() {
     link
       .attr("x1", function(d) {
@@ -118,17 +130,20 @@
       });
   }
 
+  // If node is clicked on, restart drag event
   function dragstarted(d) {
     if (!d3.event.active) simulation.alphaTarget(0.3).restart();
     d.fx = d.x;
     d.fy = d.y;
   }
 
+  // If node is ticked, give it draggable properties
   function dragged(d) {
     d.fx = d3.event.x;
     d.fy = d3.event.y;
   }
 
+  // If user stops dragging, node is released and becomes static
   function dragended(d) {
     if (!d3.event.active) simulation.alphaTarget(0);
     d.fx = null;
