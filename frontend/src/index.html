@@ -46,13 +46,14 @@ d3.json("test.json", function(error, graph) {
     .selectAll("circle")
     .data(graph.nodes)
     .enter().append("circle")
-      .attr("r", 5)
-      .attr("fill", function(d) { return color(d.group); })
+      .attr("r", 5)		
+      .attr("fill", function(d) { return color(d.group); }) // Return different color based off group
       .call(d3.drag() // Call d3's drag api to initialize function
           .on("start", dragstarted)
           .on("drag", dragged)
           .on("end", dragended));
 
+  // Display nodes name when hovered over with mouse
   node.append("title")
       .text(function(d) { return d.id; });
 
