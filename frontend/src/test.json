@@ -1,24 +1,16 @@
 {
-  "nodes": [
-      { name: "node1" },
-      { name: "node2" },
-      { name: "node3" },
-      { name: "node4" },
-      { name: "node5" },
-      { name: "node6" },
-      { name: "node7" },
-      { name: "node8" }
+ "nodes": [
+      { "id": "230425980"},
+      { "id": "5530458"},
+      { "id": "232022460"},
+      { "id": "232438397"},
+      { "id": "230460314"}
     ],
     "links": [
-      { source: "node1", target: "node2" },
-      { source: "node3", target: "node2" },
-      { source: "node4", target: "node3" },
-      { source: "node5", target: "node4" },
-      { source: "node1", target: "node3" },
-      { source: "node3", target: "node5" },
-      { source: "node6", target: "node5" },
-      { source: "node7", target: "node6" },
-      { source: "node8", target: "node7" },
-      { source: "node5", target: "node8" }
-    ]
+      { "source": "230425980", "target": "5530458" },
+      { "source": "230425980", "target": "232022460" },
+      { "source": "5530458", "target": "232022460" },
+      { "source": "232438397", "target": "230425980" },
+      { "source": "230460314", "target": "230425980" }
+  ]
 }
