@@ -31,7 +31,7 @@ var simulation = d3.forceSimulation()
     .force("center", d3.forceCenter(width / 2, height / 2));
 
 // Import json file to be represented by graph
-d3.json("graph1.json", function(error, graph) {
+d3.json("graph-a.json", function(error, graph) {
   if (error) throw error;
 
   var link = svg.append("g") // Create vector graphics for every link between nodes
