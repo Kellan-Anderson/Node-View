@@ -27,8 +27,11 @@ function App() {
       { source: "node5", target: "node8" }
     ];
 
+    const data = require("./test.json");
+    console.log(data);
+
   return (
-    <Graph data={{nodes, links}} />
+    <Graph data={data} />
   );
 }
 
