@@ -1,37 +1,36 @@
-import React from 'react';
+import { useState } from 'react';
 import Graph from './components/Graph';
 import './App.css';
 
 function App() {
-  var nodes = [
-      { name: "node1" },
-      { name: "node2" },
-      { name: "node3" },
-      { name: "node4" },
-      { name: "node5" },
-      { name: "node6" },
-      { name: "node7" },
-      { name: "node8" }
-  ];
+    const d = require("./data/model.json");
+    //console.log(data);
 
-  var links = [
-      { source: "node1", target: "node2" },
-      { source: "node3", target: "node2" },
-      { source: "node4", target: "node3" },
-      { source: "node5", target: "node4" },
-      { source: "node1", target: "node3" },
-      { source: "node3", target: "node5" },
-      { source: "node6", target: "node5" },
-      { source: "node7", target: "node6" },
-      { source: "node8", target: "node7" },
-      { source: "node5", target: "node8" }
-    ];
+    const [timestep, setTimestep] = useState(1)
+    const [data, setData] = useState(d.timestep1)
 
-    const data = require("./test.json");
-    console.log(data);
+    const increase = () => {
+      if(timestep + 1 != 50) {
+        setTimestep(timestep + 1)
+        //setData(d['timestep' + timestep.toString()])
+      }
+    }
+
+    const decrease = () => {
+      if(timestep -1 != 0) {
+        setTimestep()
+        //setData(d['timestep' + timestep.toString()])
+      }
+    }
+
 
   return (
-    <Graph data={data} />
+    <>
+      <Graph data={data} />
+      <button className='inline' onClick={increase()}>Decrease timestep</button>
+      <p>Timestep: {timestep}</p>
+      <button className='inline' onClick={decrease()}>Increase timestep</button>
+    </>
   );
 }
 

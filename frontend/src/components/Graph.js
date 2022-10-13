@@ -19,7 +19,7 @@ const Graph = ({data}) => {
       const simulation = d3
           .forceSimulation(data.nodes)
           .force("link", d3.forceLink().id(d => d.id))
-          .force("charge", d3.forceManyBody().strength(-30))
+          .force("charge", d3.forceManyBody().strength(-3))
           .force("center", d3.forceCenter(width / 2, height / 2));
       /*
       const drag = (simulation) => {
