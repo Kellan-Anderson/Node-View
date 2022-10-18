@@ -1,10 +1,10 @@
-import React from 'react';
+import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
 const useD3 = (renderGraph, dependancies) => {
-    const ref = React.useRef();
+    const ref = useRef();
 
-    React.useEffect(() => {
+    useEffect(() => {
         renderGraph(d3.select(ref.current));
         return () => {};
     }, dependancies);

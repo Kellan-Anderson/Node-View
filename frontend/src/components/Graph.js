@@ -6,9 +6,13 @@ import "./graph.css";
 const Graph = ({data}) => {
   const ref = useD3(
     (svg) => {
+      console.log('redering:');
+      console.log(data)
 
       const height = 300;
       const width = 300;
+
+      svg.selectAll("*").remove();
 
       svg
         .attr("preserveAspectRatio", "xMinYMin meet")
@@ -116,8 +120,8 @@ const Graph = ({data}) => {
         .force("link")
         .links(data.links);
     },
-    [data.length]
-  )
+    [data]
+  );
 
   return (
     <div className="graphContainer">
