@@ -8,29 +8,22 @@ function App() {
     const [timestep, setTimestep] = useState(1);
     const [data, setData] = useState(d.timestep1);
 
-    const increase = () => {
-      if(timestep + 1 != 50) {
-        var newStep = timestep + 1;
-        setTimestep(newStep);
-        setData(d['timestep' + newStep]);
-      }
-    }
-
-    const decrease = () => {
-      if(timestep -1 != 0) {
-        var newStep = timestep - 1;
-        setTimestep(newStep);
-        setData(d['timestep' + newStep]);
-      }
+    const handleChange = (value) => {
+      setTimestep(value);
+      setData(d['timestep' + value]);
     }
 
 
   return (
     <>
       <Graph data={data} />
-      <button className='inline' onClick={decrease}>Decrease timestep</button>
+      <input
+        type="range"
+        min="1"
+        max="49"
+        onChange={(e) => handleChange(e.target.value)}
+        value={timestep} />
       <p>Timestep: {timestep}</p>
-      <button className='inline' onClick={increase}>Increase timestep</button>
     </>
   );
 }
