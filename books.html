@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+
+{% block content %}
+
+<p>Books</p>
+
+<ul>
+	{% for book in books %}
+		<li>{{ book }}</li>
+	{% empty %}
+		<li>No BOOOOOK.</li>
+	{% endfor %}
+</ul>
+
+{% endblock content %}
