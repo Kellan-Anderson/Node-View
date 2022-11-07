@@ -15,3 +15,9 @@ backend test webpage run:
 While in the frontend folder, to run the test webpage run:
     npm start
     Navigate to localhost:3000 in a browser to see the webpage
+
+Database setup:
+    This project uses Neo4j as a database. The React frontend contacts the 
+    database over the localhost and uses a preset driver with the feilds 
+    defined in the main index.js file. To use a different database these values
+    will need to be changed 
