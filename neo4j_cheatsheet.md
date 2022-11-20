@@ -45,3 +45,15 @@
  MATCH (i:Illicit), (i:Illicit)
  WHERE i.id = '' AND i.id = ''
  CREATE (i)-[con:CONNECTED]->(i)
+
+
+# MATCH (n:entity) RETURN n LIMIT 25
+
+# FOR KELLAN
+# NOTE: if url doesn't work try replacing it with https://raw.githubusercontent.com/aidankirk617/testingtesting/main/new_test.json
+
+CALL apoc.load.json("https://raw.githubusercontent.com/Kellan-Anderson/Capstone/main/frontend/src/data/new_test.json?token=GHSAT0AAAAAAB2YH7NOZ2V6GC4YW6665VDMY32L7DQ") YIELD value
+UNWIND value.links as l
+MERGE (source:Source {source: l.source, group: l.group, timestamp: l.timestamp})
+MERGE (target:Target {target: l.target, group: l.group, timestamp: l.timestamp})
+MERGE (source)-[conn:CONNECTED]->(target)
