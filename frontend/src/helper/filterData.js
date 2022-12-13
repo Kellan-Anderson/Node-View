@@ -1,5 +1,3 @@
-import { link } from "d3";
-
 const filterData = (data) => {
   // Build the node list
   var node_list = [];
@@ -17,6 +15,7 @@ const filterData = (data) => {
     link_list.push({source: node.source.id, target: node.target.id});
   });
 
+  // Return the nodes in the right format
   return {nodes: node_list, links: link_list}
 }
 
