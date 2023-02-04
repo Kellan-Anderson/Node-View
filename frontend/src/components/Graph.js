@@ -74,7 +74,7 @@ const Graph = ({data}) => {
           .append("circle")
           .attr("r", 5)
           .attr("fill", (d) => {
-            return color(d.group.low); // Added .low to get the right number from neo4j query
+            return color(d.group); // Added .low to get the right number from neo4j query
           })
           .call(
             d3

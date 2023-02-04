@@ -14,37 +14,35 @@ import filterData from './helper/filterData';
 function App() {
   const [timestep, setTimestep] = useState(1);
 
-  //TODO fix so there is no work-around
-  // Anywhere either of these varables are used it should be changed to the timestep variables
-  const [pointer, setPointer] = useState(0);
-  const valid_timestamps = [1,2,3,4,5,6,7,8,9,10];
-
   // Constants used for atlking to the database
-  const key = "{source: {id: n.source, group: n.group}, target: {id: m.target, group: m.group}}";
-  const limit = 20;
+  const key = "{nodes: nodes, links: links}";
   
   const getQuery = (v) => {
-    // Old query
-    //return `match (n:${value}), (a:${value})-[]->(b:${value}) with collect(distinct {id: n.id, group: n.group}) as nodes, collect(distinct {source: a.id, target: b.id}) as links return {nodes: nodes, links: links}`
-  
-    // Query to communicate with the database, changes based on value passed to function
-    return `match (n:Source {timestamp: ${v}})-[]->(m:Target {timestamp: ${v}}) return n,m,{source: {id: n.source, group: n.group}, target: {id: m.target, group: m.group}} limit ${limit}`;
+    const query = `match (n:Transaction {timestep: "${v}"}), ` +
+                  `(a:Transaction {timestep: "${v}"})-[]->(b:Transaction {timestep: "${v}"}) ` +
+                  "WITH COLLECT(DISTINCT {id: n.id, group: n.group}) as nodes, " + 
+                  "COLLECT(DISTINCT {source: a.id, target: b.id}) as links RETURN {nodes: nodes, links: links}";
+    console.log(query);
+    
+    return query;
+    /*
+    MATCH (n:Transaction {timestep: "1"}), (a:Transaction {timestep: "1"})-[]->(b:Transaction {timestep: "1"})
+    WITH COLLECT(DISTINCT {id: n.id, group: n.group}) as nodes, COLLECT(DISTINCT {source: a.id, target: b.id}) as links
+    RETURN {nodes: nodes, links: links}
+    */
   };
 
   // Get the query
-  let query = getQuery(valid_timestamps[pointer]);
-  
-  // Testing
-  //console.log(query); 
+  let query = getQuery(timestep);
   
   // Get the functions and variables we need from the use-neo4j package
   const {records, run} = useReadCypher(query);
 
   // Requery the database whenever the state changes
   useEffect(() => {
-    query = getQuery(valid_timestamps[pointer]);
+    query = getQuery(timestep);
     run({query});
-  }, [pointer]);
+  }, [timestep]);
 
   // Default result of the database
   let result = (<div>Data not loaded</div>);
@@ -57,6 +55,7 @@ function App() {
     console.log("Records is undefined");
   }
   else {
+    /* Old code
     // Loop over the recods received from the database and add them to a list
     var data_list = [];
     records.forEach(e => {
@@ -65,6 +64,10 @@ function App() {
 
     // Filter the data to get a format D3 can use
     data = filterData(data_list);
+    */
+
+    /* New code */
+    data = records[0].get(key);
 
     // Pass the data to our graph component
     result = (<Graph data={data}/>);
@@ -72,7 +75,7 @@ function App() {
   
   // Runs whenever the slider is moved
   const handleChange = (value) => {
-    setPointer(value);
+    setTimestep(value);
   }
 
   return (
@@ -83,8 +86,8 @@ function App() {
         min="0"
         max="9"
         onChange={(e) => handleChange(e.target.value)}
-        value={pointer} />
-      <p>Timestep: {valid_timestamps[pointer]}</p>
+        value={timestep} />
+      <p>Timestep: {timestep}</p>
     </>
   );
 }
