@@ -3,59 +3,100 @@
 <svg width="960" height="600"></svg>
 <script src="https://d3js.org/d3.v5.min.js"></script>
 <script>
-
   //initilize svg or grab svg
   var svg = d3.select("svg");
   var width = svg.attr("width");
   var height = svg.attr("height");
 
-  d3.json("~/Code/sprint2/graph-a.json", function(error, graph) {
-		  if (error) throw error;}
+  var graphData = {
+ nodes: [
+      { id: "230425980", group: 1},
+      { id: "5530458", group: 1},
+      { id: "232022460", group: 1},
+      { id: "232438397", group: 2},
+      { id: "230460314", group: 2},
+      { id: "230459870", group: 1},
+      { id: "230333930", group: 1},
+      { id: "230595899", group: 1},
+      { id: "232013274", group: 1},
+      { id: "232029206", group: 2},
+      { id: "232344069", group: 2},
+      { id: "27553029", group: 2},
+      { id: "36411953", group: 1},
+      { id: "230405052", group: 1},
+      { id: "34194980", group: 1},
+      { id: "5529846", group: 1},
+      { id: "3881097", group: 2},
+      { id: "232457116", group: 2}],
 
-    var simulation = d3
-       .forceSimulation(graph.nodes)
-       .force("charge", d3.forceManyBody().strength(300))
-       .force("center", d3.forceCenter(width / 2, height / 2))
-       .force("collide", d3.forceCollide(30).strength(0.7))
+    links: [
+      { source: "230425980", target: "5530458" },
+      { source: "230425980", target: "232022460" },
+      { source: "5530458", target: "232022460" },
+      { source: "232438397", target: "230425980" },
+      { source: "230460314", target: "230425980" },
+      { source: "230460314", target: "230459870" },
+      { source: "230460314", target: "232457116"},
+      { source: "230460314", target: "230459870" },
+      { source: "230460314", target: "230595899" },
+      { source: "230460314", target: "232013274" },
+      { source: "230460314", target: "232029206" },
+      { source: "230460314", target: "232344069" },
+      { source: "230460314", target: "27553029" },
+      { source: "230460314", target: "36411953" },
+      { source: "230460314", target: "230405052" },
+      { source: "230460314", target: "34194980" },
+      { source: "230460314", target: "232457116"}, 
 
-       .on("tick", ticked);
+      { source: "5529846", target: "3881097" },
+      { source: "5529846", target: "230333930" }
+    ]
+  };
 
-    var links = svg
-       .append("g")
-       .selectAll("line")
-       .data(graph.links)
-       .enter()
-       .append("line")
-       .attr("stroke-width", 3)
-       .style("stroke", "orange");
+  var simulation = d3
+    .forceSimulation(graphData.nodes)
+    .force("charge", d3.forceManyBody().strength(300))
+    .force("center", d3.forceCenter(width / 2, height / 2))
+    .force("collide", d3.forceCollide(30).strength(0.7))
 
-    var drag = d3
-       .drag()
-       .on("start", dragstarted)
-       .on("drag", dragged)
-       .on("end", dragended);
+    .on("tick", ticked);
 
-    var textsAndNodes = svg
-       .append("g")
-       .selectAll("g")
-       .data(graph.nodes)
-       .enter()
-       .append("g")
-       .call(drag);
+  var links = svg
+    .append("g")
+    .selectAll("line")
+    .data(graphData.links)
+    .enter()
+    .append("line")
+    .attr("stroke-width", 3)
+    .style("stroke", "orange");
 
-    var circles = textsAndNodes
-       .append("circle")
-       .attr("r", 30)
-       .attr("fill", "red");
+  var drag = d3
+    .drag()
+    .on("start", dragstarted)
+    .on("drag", dragged)
+    .on("end", dragended);
 
-    var texts = textsAndNodes.append("text").text(function(d) {
-       return d.id;
-    });
+  var textsAndNodes = svg
+    .append("g")
+    .selectAll("g")
+    .data(graphData.nodes)
+    .enter()
+    .append("g")
+    .call(drag);
 
-    function ticked() {
-       //translate(x, y)
-       textsAndNodes.attr("transform", function(d) {
-         return "translate(" + d.x + ", " + d.y + ")";
+  var circles = textsAndNodes
+    .append("circle")
+    .attr("r", 30)
+    .attr("fill", "red");
+
+  var texts = textsAndNodes.append("text").text(function(d) {
+    return d.name;
+  });
+
+  function ticked() {
+    //translate(x, y)
+    textsAndNodes.attr("transform", function(d) {
+      return "translate(" + d.x + ", " + d.y + ")";
     });
 
     links
@@ -72,25 +113,23 @@
         return d.target.y;
       });
     console.log(simulation.alpha());
-   }
+  }
 
-    function dragstarted(d) {
-       // If alpha hits 0, stop
-       simulation.alphaTarget(0.3).restart();
-       d.fx = d3.event.x;
-       d.fy = d3.event.y;
+  function dragstarted(d) {
+    //your alpha hit 0 it stops! make it run again
+    simulation.alphaTarget(0.3).restart();
+    d.fx = d3.event.x;
+    d.fy = d3.event.y;
+  }
+  function dragged(d) {
+    d.fx = d3.event.x;
+    d.fy = d3.event.y;
+  }
 
-    }
-    function dragged(d) {
-       d.fx = d3.event.x;
-       d.fy = d3.event.y;
-     }
-
-    function dragended(d) {
-       // alpha min is 0, head there
-       simulation.alphaTarget(0);
-       d.fx = null;
-       d.fy = null;
-     }
-
+  function dragended(d) {
+    // alpha min is 0, head there
+    simulation.alphaTarget(0);
+    d.fx = null;
+    d.fy = null;
+  }
 </script>
