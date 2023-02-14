@@ -87,10 +87,20 @@
   var circles = textsAndNodes
     .append("circle")
     .attr("r", 30)
-    .attr("fill", "red");
+    //.attr("fill", "red");
+    .style("fill", function (d) {
+		    console.log(d);
+            if (d.group == 1) {
+                return "#2DD7EB";
+            } else if (d.group == 2) {
+                return "#FF0000";
+            } else if (d.group == "Pending") {
+                return "#F55431"
+            }});
+
 
   var texts = textsAndNodes.append("text").text(function(d) {
-    return d.name;
+    return d.group;
   });
 
   function ticked() {
