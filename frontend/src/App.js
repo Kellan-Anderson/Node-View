@@ -83,8 +83,8 @@ function App() {
     {result}
       <input
         type="range"
-        min="0"
-        max="9"
+        min="1"
+        max="49"
         onChange={(e) => handleChange(e.target.value)}
         value={timestep} />
       <p>Timestep: {timestep}</p>
