@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import Graph from './components/Graph';
 import { useReadCypher } from 'use-neo4j';
 import './App.css';
-import filterData from './helper/filterData';
 
 /**
  * App.js, logic entry point for our data. This function controls the ways things are rendered to the user
