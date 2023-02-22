@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import Graph from './components/Graph';
+import Donut from './components/Donut';
+import Pie from './components/Pie';
+import Pie2 from './components/Pie2';
 import { useReadCypher } from 'use-neo4j';
-import './App.css';
 
 /**
  * App.js, logic entry point for our data. This function controls the ways things are rendered to the user
@@ -69,7 +71,14 @@ function App() {
     data = records[0].get(key);
 
     // Pass the data to our graph component
-    result = (<Graph data={data}/>);
+    result = (
+      <>
+        <Graph data={data}/>
+        <Pie data={data.nodes} />
+        <Pie2 data={data.nodes} />
+        <Donut data={data.nodes} />
+      </>
+    );
   }
   
   // Runs whenever the slider is moved
@@ -80,13 +89,15 @@ function App() {
   return (
     <>
     {result}
-      <input
-        type="range"
-        min="1"
-        max="49"
-        onChange={(e) => handleChange(e.target.value)}
-        value={timestep} />
-      <p>Timestep: {timestep}</p>
+    <input
+      type="range"
+      min="1"
+      max="49"
+      onChange={(e) => handleChange(e.target.value)}
+      value={timestep} />
+    <button onClick={(e) => {setTimestep(timestep + 1)}}>Increace TS</button>
+    <button onClick={(e) => {setTimestep(timestep - 1)}}>Decrease TS</button>
+    <p>Timestep: {timestep}</p>
     </>
   );
 }
