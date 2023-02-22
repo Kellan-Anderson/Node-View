@@ -9,6 +9,8 @@ const Pie = ({ data }) => {
             const height = 450;
             const margin = 40;
 
+            console.log("svg: ", svg);
+
 
             const ratioData = [
                 {label: "illicit", value: 0},
@@ -53,28 +55,15 @@ const Pie = ({ data }) => {
                 .padAngle(0)
                 .value(d => d.value);
 
-            const arc = svg
-                .selectAll()
-                .data(pieGenerator(ratioData))
-                .enter();
-            
-            arc
-                .append('path')
-                .attr('d', arcGenerator)
-                .style('fill', (_, i) => colorScale(i))
-                .style('stroke', '#ffffff')
-                .style('stroke-width', 0);
-               
-            arc
-                .append('text')
-                .attr('text-anchor', 'middle')
-                .attr('alignment-baseline', 'middle')
-                .text((d) => d.data.label)
-                .style('fill', '#ffffff')
-                .attr('transform', (d) => {
-                    const [x, y] = arcGenerator.centroid(d);
-                    return `translate(${x}, ${y})`;
-                });
+            const arcData = pieGenerator(ratioData);
+            console.log("AGen", arcGenerator)
+                        
+            svg.select("g")
+                .selectAll('path')
+                .data(arcData)
+                .join('path')
+                .attr('d', arcGenerator);
+            console.log()
         },
         [data]
     );

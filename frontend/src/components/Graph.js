@@ -74,6 +74,7 @@ const Graph = ({data}) => {
           .append("circle")
           .attr("r", 5)
           .attr("fill", (d) => {
+            console.log(d)
             return color(d.group);
           })
           .call(

@@ -13,6 +13,26 @@ const Pie2 = ({ data }) => {
             // Adjust radius to fit inside react page
             var radius = Math.min(width, height) / 2 - margin
 
+            const ratioData = [
+                {label: "illicit", value: 0, group: 1},
+                {label: "licit", value: 0, group: 2},
+                {label: "unknown", value: 0, group: 3},
+            ]
+            
+            data.forEach(node => {
+                if(node.group === "1") {
+                    ratioData[0].value++;
+                }
+                else if(node.group === "2") {
+                    ratioData[1].value++;
+                }
+                else {
+                    ratioData[2].value++;
+                }
+            });
+
+            svg.selectAll("*").remove();
+
             // Append svg object to the page divider
             svg
                 .attr("width", width)
@@ -20,27 +40,22 @@ const Pie2 = ({ data }) => {
                 .append("g")
                 .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-            // Dummy data
-            var first_timestep = {a: 9, b: 20}
-            var second_timestep = {a: 6, b: 16}
-
             // Color scheme
-            var color = d3.scaleOrdinal()
-                .domain(["a", "b"])
-                .range(d3.schemeDark2);
+            var color = d3.scaleOrdinal(d3.schemeCategory10);
 
             // Refreshes the chart for each timestep
-            function update(data) {
+            //const update = (data) => {
 
                 // Give each part of the pie a value
                 var pieGen = d3.pie()
                     .value(function(d) {return d.value; })
-                    .sort(function(a, b) { console.log(a) ; return d3.ascending(a.key, b.key);} )
+                    .sort(function(a, b) { return d3.ascending(a.key, b.key);} )
 
                 // Give the data a path
                 var u = svg
+                    .selectAll("*")
                     .selectAll("path")
-                    .data(pieGen(data));
+                    .data(pieGen(ratioData));
 
                 // Create the pie chart
                 u
@@ -53,7 +68,7 @@ const Pie2 = ({ data }) => {
                         .innerRadius(0)
                         .outerRadius(radius)
                     )
-                    .attr('fill', function(d){ return(color(d.data.key)) })
+                    .attr('fill', (d) => { console.log(d.data.group); return color(d.data.group) })
                     .attr("stroke", "white")
                     .style("stroke-width", "2px")
                     .style("opacity", 1)
@@ -62,10 +77,10 @@ const Pie2 = ({ data }) => {
                 u
                     .exit()
                     .remove()
-            }
+            //}
 
             // Update the chart back to the first timestep
-            update(first_timestep)
+            //update(first_timestep)
         },
         [data]
     );

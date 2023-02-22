@@ -74,9 +74,7 @@ function App() {
     result = (
       <>
         <Graph data={data}/>
-        <Pie data={data.nodes} />
         <Pie2 data={data.nodes} />
-        <Donut data={data.nodes} />
       </>
     );
   }
