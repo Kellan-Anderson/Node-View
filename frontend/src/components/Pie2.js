@@ -1,6 +1,7 @@
 import useD3 from "../hooks/useD3";
 import React from "react";
 import * as d3 from 'd3'
+import getColor from "../helper/color.js";
 
 const Pie2 = ({ data }) => {
     const ref = useD3(
@@ -40,47 +41,40 @@ const Pie2 = ({ data }) => {
                 .append("g")
                 .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-            // Color scheme
-            var color = d3.scaleOrdinal(d3.schemeCategory10);
-
             // Refreshes the chart for each timestep
-            //const update = (data) => {
 
-                // Give each part of the pie a value
-                var pieGen = d3.pie()
-                    .value(function(d) {return d.value; })
-                    .sort(function(a, b) { return d3.ascending(a.key, b.key);} )
+            // Give each part of the pie a value
+            var pieGen = d3.pie()
+                .value(function(d) {return d.value; })
+                .sort(function(a, b) { return d3.ascending(a.key, b.key);} )
 
-                // Give the data a path
-                var u = svg
-                    .selectAll("*")
-                    .selectAll("path")
-                    .data(pieGen(ratioData));
+            // Give the data a path
+            var u = svg
+                .selectAll("*")
+                .selectAll("path")
+                .data(pieGen(ratioData));
 
-                // Create the pie chart
-                u
-                    .enter()
-                    .append('path')
-                    .merge(u)
-                    .transition()
-                    .duration(1000)
-                    .attr('d', d3.arc()
-                        .innerRadius(0)
-                        .outerRadius(radius)
-                    )
-                    .attr('fill', (d) => { console.log(d.data.group); return color(d.data.group) })
-                    .attr("stroke", "white")
-                    .style("stroke-width", "2px")
-                    .style("opacity", 1)
+            // Create the pie chart
+            u
+                .enter()
+                .append('path')
+                .merge(u)
+                .transition()
+                .duration(1000)
+                .attr('d', d3.arc()
+                    .innerRadius(0)
+                    .outerRadius(radius)
+                )
+                .attr('fill', (d) => { console.log(d.data.group); return getColor(d.data.group) })
+                .attr("stroke", "white")
+                .style("stroke-width", "2px")
+                .style("opacity", 1)
 
-                // Remove any irrelevant groups
-                u
-                    .exit()
-                    .remove()
-            //}
+            // Remove any irrelevant groups
+            u
+                .exit()
+                .remove()
 
-            // Update the chart back to the first timestep
-            //update(first_timestep)
         },
         [data]
     );

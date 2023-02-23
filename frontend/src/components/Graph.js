@@ -1,6 +1,7 @@
 import useD3 from "../hooks/useD3";
 import React from "react";
 import * as d3 from 'd3';
+import getColor from "../helper/color";
 import "./graph.css";
 
 /**
@@ -23,9 +24,6 @@ const Graph = ({data}) => {
       svg
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", "0 0 300 300");
-
-      // Setup our color
-      const color = d3.scaleOrdinal(d3.schemeCategory10);
 
       // Define how we would like our simulation to act
       const simulation = d3
@@ -75,7 +73,7 @@ const Graph = ({data}) => {
           .attr("r", 5)
           .attr("fill", (d) => {
             console.log(d)
-            return color(d.group);
+            return getColor(d.group);
           })
           .call(
             d3
