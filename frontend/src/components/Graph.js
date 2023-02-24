@@ -13,17 +13,23 @@ const Graph = ({data}) => {
   const ref = useD3(
     (svg) => {
 
+      const dimensions = d3.select(".graphContainer").node().getBoundingClientRect();
       // Constants used by the SVG
-      const height = 300;
-      const width = 300;
+      const height = dimensions.height;
+      const width = dimensions.width;
+
+      //console.log(`Width: ${width}, Height: ${height}`)
 
       // Reset our graph in the case of a state change
       svg.selectAll("*").remove();
 
+
       // Add required aspects to the svg
       svg
         .attr("preserveAspectRatio", "xMinYMin meet")
-        .attr("viewBox", "0 0 300 300");
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .attr("height", height)
+        .attr("width", width);
 
       // Define how we would like our simulation to act
       const simulation = d3
@@ -33,6 +39,12 @@ const Graph = ({data}) => {
           .force("center", d3.forceCenter(width / 2, height / 2));
         
         // Functions to define what happens when a user clicks on an app
+        const checkX = (event) => {
+          return event.subject.fx >= 0 && event.subject.fx <= width;
+        }
+        const checkY = (event) => {
+          return event.subject.fy >= 0 && event.subject.fy <= width;
+        }
         function dragstarted(event) {
           if (!event.active) simulation.alphaTarget(0.3).restart();
           event.subject.fx = event.subject.x;
@@ -70,9 +82,8 @@ const Graph = ({data}) => {
           .data(data.nodes)
           .enter()
           .append("circle")
-          .attr("r", 5)
+          .attr("r", 7)
           .attr("fill", (d) => {
-            console.log(d)
             return getColor(d.group);
           })
           .call(
@@ -87,16 +98,22 @@ const Graph = ({data}) => {
         node.append("title").text((d) => { return d.id; });
 
       // Defines the action for how nodes act over time
+      const limitPosition = (value, direction) => {
+        if (value < 0) return 0;
+        else if(direction === "x") return value > width ? width : value;
+        else if(direction === "y") return value > height ? height : value;
+      }
+
       const ticked = () => {
         link
-          .attr("x1", function(d) { return d.source.x; })
-          .attr("y1", function(d) { return d.source.y; })
-          .attr("x2", function(d) { return d.target.x; })
-          .attr("y2", function(d) { return d.target.y; });
+          .attr("x1", (d) => limitPosition(d.source.x, "x") )
+          .attr("y1", (d) => limitPosition(d.source.y, "y") )
+          .attr("x2", (d) => limitPosition(d.target.x, "x") )
+          .attr("y2", (d) => limitPosition(d.target.y, "y") );
  
         node
-          .attr("cx", function(d) { return d.x; })
-          .attr("cy", function(d) { return d.y; });
+          .attr("cx", (d) => limitPosition(d.x, "x") )
+          .attr("cy", (d) => limitPosition(d.y, "y") );
       }
 
       // Add the ticked method, nodes and links to our simulation
@@ -113,10 +130,10 @@ const Graph = ({data}) => {
 
   // SVG Containing the graph
   return (
-    <div className="graphContainer">
+    <div className="graphContainer h-full w-full">
       <svg
       ref={ref}
-      className="graph">
+      className="inline-block absolute">
 
       </svg>
     </div>

@@ -1,21 +1,30 @@
 import useD3 from "../hooks/useD3";
 import React from "react";
 import * as d3 from 'd3'
+import getColor from "../helper/color.js";
 
-const Pie = ({ data }) => {
+const Pie2 = ({ data }) => {
     const ref = useD3(
         (svg) => {
-            const width = 450;
-            const height = 450;
-            const margin = 40;
+            
+            // Set dimensions and margins
+            const dimensions = d3.select(".pieTin").node().getBoundingClientRect();
 
-            console.log("svg: ", svg);
+            const height = dimensions.height;
+            const width = dimensions.width;
+            const margin = 40
 
+            // Adjust radius to fit inside react page
+            const radius = Math.min(width, height) / 2 - margin
+
+            svg
+                .attr("preserveAspectRatio", "xMinYMin meet")
+                .attr("viewBox", `0 0 ${width} ${height}`);
 
             const ratioData = [
-                {label: "illicit", value: 0},
-                {label: "licit", value: 0},
-                {label: "unknown", value: 0},
+                {label: "illicit", value: 0, group: 1},
+                {label: "licit", value: 0, group: 2},
+                {label: "unknown", value: 0, group: 3},
             ]
             
             data.forEach(node => {
@@ -26,56 +35,67 @@ const Pie = ({ data }) => {
                     ratioData[1].value++;
                 }
                 else {
-                    ratioData.unknown++;
+                    ratioData[2].value++;
                 }
             });
 
-            const colorScale = d3
-                .scaleSequential()
-                .interpolator(d3.interpolateCool)
-                .domain([0, ratioData.length])
-            
-            svg
-                .selectAll("*")
-                .remove();
-            
-            svg
-                .attr('width', width)
-                .attr('height', height)
-                .append("g")
-                .attr('transform', `translate(${width/2}, ${height/2})`);
-            
-            const arcGenerator = d3
-                .arc()
-                .innerRadius(0)
-                .outerRadius(Math.min(height, width) - margin);
-            
-            const pieGenerator = d3
-                .pie()
-                .padAngle(0)
-                .value(d => d.value);
+            svg.selectAll("*").remove();
 
-            const arcData = pieGenerator(ratioData);
-            console.log("AGen", arcGenerator)
-                        
-            svg.select("g")
-                .selectAll('path')
-                .data(arcData)
-                .join('path')
-                .attr('d', arcGenerator);
-            console.log()
+            // Append svg object to the page divider
+            svg
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+            // Refreshes the chart for each timestep
+
+            // Give each part of the pie a value
+            var pieGen = d3.pie()
+                .value(function(d) {return d.value; })
+                .sort(function(a, b) { return d3.ascending(a.key, b.key);} )
+
+            // Give the data a path
+            var u = svg
+                .selectAll("*")
+                .selectAll("path")
+                .data(pieGen(ratioData));
+
+            // Create the pie chart
+            u
+                .enter()
+                .append('path')
+                .merge(u)
+                .transition()
+                .duration(1000)
+                .attr('d', d3.arc()
+                    .innerRadius(0)
+                    .outerRadius(radius)
+                )
+                .attr('fill', (d) => { return getColor(d.data.group) })
+                .attr("stroke", "white")
+                .style("stroke-width", "2px")
+                .style("opacity", 1)
+
+            // Remove any irrelevant groups
+            u
+                .exit()
+                .remove()
+
         },
         [data]
     );
 
+    // classname pieTin can be renamed to pie container
     return (
-        <div className="pieChart">
+        <div className="pieTin">
             <svg
                 ref={ref}
-                className="pie"></svg>
+                className="Pie inline-block absolute">
+
+                </svg>
         </div>
     );
 }
 
-
-export default Pie;
+export default Pie2

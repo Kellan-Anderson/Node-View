@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import Graph from './components/Graph';
-import Donut from './components/Donut';
 import Pie from './components/Pie';
-import Pie2 from './components/Pie2';
 import { useReadCypher } from 'use-neo4j';
 
 /**
@@ -23,7 +21,7 @@ function App() {
                   `(a:Transaction {timestep: "${v}"})-[]->(b:Transaction {timestep: "${v}"}) ` +
                   "WITH COLLECT(DISTINCT {id: n.id, group: n.group}) as nodes, " + 
                   "COLLECT(DISTINCT {source: a.id, target: b.id}) as links RETURN {nodes: nodes, links: links}";
-    console.log(query);
+    //console.log(query);
     
     return query;
     /*
@@ -72,30 +70,51 @@ function App() {
 
     // Pass the data to our graph component
     result = (
-      <>
-        <Graph data={data}/>
-        <Pie2 data={data.nodes} />
-      </>
+      <div className='grid grid-cols-3 w-full h-full'>
+        <div className='col-span-2'>
+          <Graph data={data} />
+        </div>
+        <Pie data={data.nodes} />
+      </div>
     );
   }
   
   // Runs whenever the slider is moved
   const handleChange = (value) => {
-    setTimestep(value);
+    setTimestep(parseInt(value));
   }
 
   return (
     <>
-    {result}
-    <input
-      type="range"
-      min="1"
-      max="49"
-      onChange={(e) => handleChange(e.target.value)}
-      value={timestep} />
-    <button onClick={(e) => {setTimestep(timestep + 1)}}>Increace TS</button>
-    <button onClick={(e) => {setTimestep(timestep - 1)}}>Decrease TS</button>
-    <p>Timestep: {timestep}</p>
+      <div className='grid grid-rows-5 h-screen w-screen'>
+        <div className='row-span-4'>
+          {result}
+        </div>
+        <div className='flex flex-col items-center'>
+          <div className='flex flex-row h-fit w-screen mt-2'>
+            <button
+              onClick={(e) => {timestep > 1 && setTimestep(timestep - 1)}}
+              className='btn-primary'
+            >
+              Decrease
+            </button>
+            <input
+              type="range"
+              min="1"
+              max="49"
+              onChange={(e) => handleChange(e.target.value)}
+              value={timestep} 
+              className='flex-1'/>
+            <button 
+              onClick={(e) => {timestep < 49 && setTimestep(timestep + 1)}}
+              className="btn-primary"
+            >
+              Increace
+            </button>
+          </div>
+          <p>Timestep: {timestep}</p>
+        </div>
+      </div>
     </>
   );
 }
