@@ -39,12 +39,7 @@ const Graph = ({data}) => {
           .force("center", d3.forceCenter(width / 2, height / 2));
         
         // Functions to define what happens when a user clicks on an app
-        const checkX = (event) => {
-          return event.subject.fx >= 0 && event.subject.fx <= width;
-        }
-        const checkY = (event) => {
-          return event.subject.fy >= 0 && event.subject.fy <= width;
-        }
+        
         function dragstarted(event) {
           if (!event.active) simulation.alphaTarget(0.3).restart();
           event.subject.fx = event.subject.x;
