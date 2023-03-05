@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Graph from './components/Graph';
 import Pie from './components/Pie';
+import Bar from './components/barchart';
 import { useReadCypher } from 'use-neo4j';
 
 /**
@@ -114,6 +115,11 @@ function App() {
           </div>
           <p>Timestep: {timestep}</p>
         </div>
+      </div>
+      <div className='grid grid-cols-3'>
+        <Bar data={data} click={e => setTimestep(7)}/>
+        <Bar data={data} />
+        <Bar data={data} />
       </div>
     </>
   );
