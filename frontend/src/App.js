@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Graph from './components/Graph';
 import Pie from './components/Pie';
-import Bar from './components/barchart';
+import BarSelector from './containers/BarSelector';
 import { useReadCypher } from 'use-neo4j';
 
 /**
@@ -12,6 +12,9 @@ import { useReadCypher } from 'use-neo4j';
  */
 
 function App() {
+  // Debugging
+  console.clear();
+
   const [timestep, setTimestep] = useState(1);
 
   // Constants used for atlking to the database
@@ -85,14 +88,18 @@ function App() {
     setTimestep(parseInt(value));
   }
 
+  const handleBarClick = (v) => {
+    setTimestep(parseInt(v));
+  }
+
   return (
     <>
-      <div className='grid grid-rows-5 h-screen w-screen'>
+      <div className='grid grid-rows-5 h-screen'>
         <div className='row-span-4'>
           {result}
         </div>
         <div className='flex flex-col items-center'>
-          <div className='flex flex-row h-fit w-screen mt-2'>
+          <div className='flex flex-row h-fit w-full mt-2'>
             <button
               onClick={(e) => {timestep > 1 && setTimestep(timestep - 1)}}
               className='btn-primary'
@@ -116,11 +123,7 @@ function App() {
           <p>Timestep: {timestep}</p>
         </div>
       </div>
-      <div className='grid grid-cols-3'>
-        <Bar data={data} click={e => setTimestep(7)}/>
-        <Bar data={data} />
-        <Bar data={data} />
-      </div>
+      <BarSelector highlighted={timestep} clickFunction={handleBarClick} />
     </>
   );
 }

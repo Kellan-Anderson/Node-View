@@ -3,7 +3,7 @@ import useD3 from "../hooks/useD3";
 import * as d3 from 'd3';
 import getColor from "../helper/color";
 
-const Bar = ({ data, click }) => {
+const Bar = ({ data }) => {
     const ref = useD3(
         (svg) => {
             const margin = {top: 30, right: 30, bottom: 70, left: 60};
@@ -14,13 +14,6 @@ const Bar = ({ data, click }) => {
             // Constants used by the SVG
             const height = dimensions.height;
             const width = dimensions.width;
-
-            // TODO
-            const mockData = [
-                {label: "illicit", value: 5, group: 1},
-                {label: "licit", value: 10, group: 2},
-                {label: "unknown", value: 30, group: 3},
-            ]
 
             svg.selectAll("*").remove();
 
@@ -36,7 +29,7 @@ const Bar = ({ data, click }) => {
             const x_axis = d3
                 .scaleBand()
                 .range([0, width])
-                .domain(mockData.map(d => d.group))
+                .domain(data.map(d => d.group))
             
             svg
                 .selectAll("path")
@@ -61,7 +54,7 @@ const Bar = ({ data, click }) => {
             // Bars
             svg
                 .selectAll(".barchart")
-                .data(mockData)
+                .data(data)
                 .enter()
                 .append("rect")
                 .attr("x", d => x_axis(d.group))
@@ -71,14 +64,12 @@ const Bar = ({ data, click }) => {
                     return y_axis(d.value);
                 })
                 .attr("fill", (d) => getColor(d.group) );
-            
-            console.log("parent:", svg)
         },
         [data]
     )
     
     return (
-        <div className="bar-container mx-2" onClick={click}>
+        <div className="bar-container">
             <svg
                 ref={ref}
                 className="barchart"
