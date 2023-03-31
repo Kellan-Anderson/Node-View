@@ -3,6 +3,7 @@ import Graph from './components/Graph';
 import Pie from './components/Pie';
 import BarSelector from './containers/BarSelector';
 import { useReadCypher } from 'use-neo4j';
+import Search from './components/Search';
 
 /**
  * App.js, logic entry point for our data. This function controls the ways things are rendered to the user
@@ -123,6 +124,7 @@ function App() {
           <p>Timestep: {timestep}</p>
         </div>
       </div>
+      <Search />
       <BarSelector highlighted={timestep} clickFunction={handleBarClick} />
     </>
   );
