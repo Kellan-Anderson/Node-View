@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import Graph from './components/Graph';
 import Pie from './components/Pie';
 import BarSelector from './containers/BarSelector';
 import { useReadCypher } from 'use-neo4j';
 import Search from './components/Search';
+import ObserverContext from './context/ObserverContext';
 
 /**
  * App.js, logic entry point for our data. This function controls the ways things are rendered to the user
@@ -14,11 +15,19 @@ import Search from './components/Search';
 
 function App() {
   // Debugging
-  console.clear();
+  //console.clear();
 
   const [timestep, setTimestep] = useState(1);
+  const [clickedNode, setClickedNode] = useState(0);
 
-  // Constants used for atlking to the database
+  const { registerSubscriber, alertSubscriber } = useContext(ObserverContext);
+
+  registerSubscriber((alertObject) => {
+    alertObject.timestep && setTimestep(alertObject.timestep);
+    setClickedNode(alertObject.id);
+  })
+
+  // Constants used for talking to the database
   const key = "{nodes: nodes, links: links}";
   
   const getQuery = (v) => {
@@ -53,6 +62,15 @@ function App() {
   
   // Init our data
   let data = {};
+  
+  const handleCircleClick = (id) => {
+    setClickedNode(id);
+    alertSubscriber({
+      id: parseInt(id),
+      timestep: undefined,
+      source: "graph"
+    })
+  }
 
   // Check to see if the data has been assigned by the database yet
   if(records === undefined) {
@@ -60,7 +78,7 @@ function App() {
   }
   else {
     /* Old code
-    // Loop over the recods received from the database and add them to a list
+    // Loop over the records received from the database and add them to a list
     var data_list = [];
     records.forEach(e => {
       data_list.push(e.get(key));
@@ -77,7 +95,7 @@ function App() {
     result = (
       <div className='grid grid-cols-3 w-full h-full'>
         <div className='col-span-2'>
-          <Graph data={data} />
+          <Graph data={data} highlight={clickedNode} nodeClick={handleCircleClick}/>
         </div>
         <Pie data={data.nodes} />
       </div>

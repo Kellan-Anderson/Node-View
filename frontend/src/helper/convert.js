@@ -1,5 +1,4 @@
 export default function convert(data) {
-  console.log("convert data: ", data)
   const rtn = [];
   data.forEach((d) => {
     rtn.push({
