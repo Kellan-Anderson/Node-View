@@ -12,8 +12,6 @@ const Pie2 = ({ data }) => {
 
             const height = dimensions.height;
             const width = dimensions.width;
-            console.log("height", height)
-            console.log("width", width)
             const margin = 40
 
             // Adjust radius to fit inside react page

@@ -1,7 +1,8 @@
 import useD3 from "../hooks/useD3";
-import React from "react";
 import * as d3 from 'd3';
 import getColor from "../helper/color";
+import { useContext } from "react";
+import ObserverContext from "../context/ObserverContext";
 import "./graph.css";
 
 /**
@@ -9,7 +10,12 @@ import "./graph.css";
  * @param {*} Data The data for our graph to render
  * @returns The graph component
  */
-const Graph = ({data}) => {
+const Graph = ({data, highlight, nodeClick}) => {
+
+  const { registerSubscriber } = useContext(ObserverContext);
+
+
+
   const ref = useD3(
     (svg) => {
 
@@ -18,11 +24,8 @@ const Graph = ({data}) => {
       const height = dimensions.height;
       const width = dimensions.width;
 
-      //console.log(`Width: ${width}, Height: ${height}`)
-
       // Reset our graph in the case of a state change
       svg.selectAll("*").remove();
-
 
       // Add required aspects to the svg
       svg
@@ -77,17 +80,20 @@ const Graph = ({data}) => {
           .data(data.nodes)
           .enter()
           .append("circle")
+          .attr("id", (d) => `node${d.id}`)
           .attr("r", 7)
-          .attr("fill", (d) => {
-            return getColor(d.group);
-          })
+          .attr("fill", (d) => getColor(d.group))
           .call(
             d3
               .drag()
               .on("start", dragstarted)
               .on("drag", dragged)
               .on("end", dragended)
-          );
+          ).on('click', (d) => {
+            nodeClick(parseInt(d.target.id.slice(4)));
+            d3.selectAll('circle').attr('fill', (d) => getColor(d.group)).attr('r', 7);
+            d3.select(`#${d.target.id}`).attr('fill', 'black').attr('r', 9);
+          });
 
         // Adds titles to nodes
         node.append("title").text((d) => { return d.id; });
@@ -119,6 +125,9 @@ const Graph = ({data}) => {
       simulation
         .force("link")
         .links(data.links);
+      
+      //tot
+      clickNode(highlight);
     },
     [data]
   );
@@ -136,3 +145,10 @@ const Graph = ({data}) => {
 }
 
 export default Graph;
+
+function clickNode(id) {
+  d3.selectAll('circle').attr('fill', (d) => getColor(d.group)).attr('r', 7);
+  if(id) {
+    d3.select(`#node${id}`).attr('fill', 'black').attr('r', 9);
+  }
+}

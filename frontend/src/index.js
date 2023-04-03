@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { Neo4jProvider, createDriver } from 'use-neo4j';
+import { ObserverProvider } from './context/ObserverContext';
 
 const address = 'localhost';
 const port = 7687;
@@ -16,7 +17,9 @@ const root = document.getElementById('root');
 ReactDOM.render(
   <React.StrictMode>
     <Neo4jProvider driver={driver}>
-      <App/>
+      <ObserverProvider>
+        <App/>
+      </ObserverProvider>
     </Neo4jProvider>
   </React.StrictMode>,
    root

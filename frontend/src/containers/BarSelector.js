@@ -11,16 +11,12 @@ export default function BarSelector({ highlighted, clickFunction }) {
 
   let result = <div>Loading</div>;
 
-  console.log("below")
-  console.log(loading, first)
-
   if(first === undefined) {
     console.log("Meta data is undefined")
   } else {
     let data = first.get(key);
     data = convert(data);
 
-    console.log("bar data", data)
     result = (
       <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-10">
         {data.map((d) => 
