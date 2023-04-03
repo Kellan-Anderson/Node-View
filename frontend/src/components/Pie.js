@@ -3,12 +3,13 @@ import React from "react";
 import * as d3 from 'd3';
 import getColor from "../helper/color.js";
 
-const Pie2 = ({ data }) => {
+const Pie = ({ data }) => {
     const ref = useD3(
         (svg) => {
             
             // Set dimensions and margins
             const dimensions = d3.select(".pieTin").node().getBoundingClientRect();
+            console.log(d3.select(".pieTin"))
 
             const height = dimensions.height;
             const width = dimensions.width;
@@ -88,7 +89,7 @@ const Pie2 = ({ data }) => {
 
     // classname pieTin can be renamed to pie container
     return (
-        <div className="pieTin">
+        <div className="pieTin h-full">
             <svg
                 ref={ref}
                 className="Pie inline-block absolute">
@@ -98,4 +99,4 @@ const Pie2 = ({ data }) => {
     );
 }
 
-export default Pie2
+export default Pie

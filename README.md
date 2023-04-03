@@ -61,3 +61,18 @@ If the project has been setup correctly and Neo4j is running, the app should ope
 
 # Notes
 Currently, the backend serves no purpose in the project due to a decision to change dataflow of the project during development. It is still part of the project for potential future use 
+
+
+# Node View
+# Setup
+There are two methods of setup: automatically and manually. Automatically pulls the data from an online repository and loads it into Neo4j. This method is recommended so that there will be no issues with the database but is slower due to the size of the dataset. Manual setup loads the data from your own machine but requires more setup in the database
+## Step One: Setting up the database
+For this project we use the Neo4j database. To use the app you will need to setup Neo4j to run locally. Installation steps are detailed below
+1) Download Neo4j for desktop [here](https://neo4j.com/download/) and follow the directions for installation
+2) Once Neo4j has finished installing, run it and click New > Create project. The name of the project is not important
+3) In the top right side of the screen, click Add > Local DBMS
+4) Leave the name of the database the same. The way that Node-View communicates with the frontend requires that the password be setup in the application. We have coded the frontend to use the password "password"
+5) Enable APOC by clicking on the databse > plugins > install APOC
+6) Once the database has finished setting up start the server and click open
+## Step Two: Importing  the data (Automatic Method)
+To setup manually, skip [here]()

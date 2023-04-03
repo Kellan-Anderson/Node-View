@@ -5,6 +5,9 @@ import BarSelector from './containers/BarSelector';
 import { useReadCypher } from 'use-neo4j';
 import Search from './components/Search';
 import ObserverContext from './context/ObserverContext';
+import { Select, MenuItem, InputLabel } from '@mui/material';
+import Bar from './components/barchart';
+import BarWrapper from './containers/BarWrapper';
 
 /**
  * App.js, logic entry point for our data. This function controls the ways things are rendered to the user
@@ -19,6 +22,10 @@ function App() {
 
   const [timestep, setTimestep] = useState(1);
   const [clickedNode, setClickedNode] = useState(0);
+  const [graph, setGraph] = useState('Pie');
+  const handleGraph = (event) => {
+	  setGraph(event.target.value);
+  }
 
   const { registerSubscriber, alertSubscriber } = useContext(ObserverContext);
 
@@ -77,17 +84,6 @@ function App() {
     console.log("Records is undefined");
   }
   else {
-    /* Old code
-    // Loop over the records received from the database and add them to a list
-    var data_list = [];
-    records.forEach(e => {
-      data_list.push(e.get(key));
-    });
-
-    // Filter the data to get a format D3 can use
-    data = filterData(data_list);
-    */
-
     /* New code */
     data = records[0].get(key);
 
@@ -97,7 +93,22 @@ function App() {
         <div className='col-span-2'>
           <Graph data={data} highlight={clickedNode} nodeClick={handleCircleClick}/>
         </div>
-        <Pie data={data.nodes} />
+        <div className='flex flex-col mr-2 pl-2 border-l-2 border-dashed border-l-black'>
+          <div className='grow py-2'>
+            {graph === 'Bar' && <BarWrapper timestep={timestep} />}
+            {graph === 'Pie' && <Pie data={data.nodes} />}
+            {/* graph === "Force-directed" &&  */}
+          </div>
+          <Select labelId="graph_type_label"
+    	  	  id="graph_type"
+    	          value={graph}
+    	  	  onChange={handleGraph}
+          >
+    	      <MenuItem value={"Bar"}>Bar Graph</MenuItem>
+    	      <MenuItem value={"Pie"}>Pie Chart</MenuItem>
+    	      {/*<MenuItem value={"Force-directed"}>Force-directed Graph</MenuItem>*/}
+  	      </Select>
+        </div>
       </div>
     );
   }
@@ -117,8 +128,11 @@ function App() {
         <div className='row-span-4'>
           {result}
         </div>
+
+        
+
         <div className='flex flex-col items-center'>
-          <div className='flex flex-row h-fit w-full mt-2'>
+          <div className='flex flex-row h-fit w-full mt-2 pt-2 border-t-2 border-black'>
             <button
               onClick={(e) => {timestep > 1 && setTimestep(parseInt(timestep) - 1)}}
               className='btn-primary'
@@ -138,7 +152,7 @@ function App() {
               }}
               className="btn-primary"
             >
-              Increace
+              Increase
             </button>
           </div>
           <p>Timestep: {timestep}</p>

@@ -30,5 +30,5 @@ export default function Landing() {
 				<Button component={Link} to="/app" variant="contained">Go to App</Button>
 			</div>
 		</div>
-	)}
-
+	);
+}

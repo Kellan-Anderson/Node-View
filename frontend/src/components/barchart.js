@@ -69,7 +69,7 @@ const Bar = ({ data }) => {
     )
     
     return (
-        <div className="bar-container">
+        <div className="bar-container h-full">
             <svg
                 ref={ref}
                 className="barchart"
