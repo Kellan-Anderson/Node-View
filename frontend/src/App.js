@@ -120,7 +120,7 @@ function App() {
         <div className='flex flex-col items-center'>
           <div className='flex flex-row h-fit w-full mt-2'>
             <button
-              onClick={(e) => {timestep > 1 && setTimestep(timestep - 1)}}
+              onClick={(e) => {timestep > 1 && setTimestep(parseInt(timestep) - 1)}}
               className='btn-primary'
             >
               Decrease
@@ -133,7 +133,9 @@ function App() {
               value={timestep} 
               className='flex-1'/>
             <button 
-              onClick={(e) => {timestep < 49 && setTimestep(timestep + 1)}}
+              onClick={(e) => {
+                timestep < 49 && setTimestep(parseInt(timestep) + 1)
+              }}
               className="btn-primary"
             >
               Increace

@@ -19,12 +19,9 @@ export default function Search() {
   const {run, records, loading, error} = useReadCypher(
     `MATCH (n {id: "${nodeId}"}), (n)-[]->(b) WITH n as n, COLLECT(b.id) as edges RETURN ${key}`
   );
-
-  console.log("loading with records: ");
     
   registerSubscriber((alertObject) => {
     if(alertObject.source !== "search") {
-      console.log(`WERE SETTING NODE`, alertObject.id)
       const id = alertObject.id;
       setNodeId(id);
     }
