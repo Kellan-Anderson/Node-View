@@ -141,8 +141,8 @@ function App() {
           </div>
           <p>Timestep: {timestep}</p>
         </div>
+        <Search />
       </div>
-      <Search />
       <BarSelector highlighted={timestep} clickFunction={handleBarClick} />
     </>
   );
