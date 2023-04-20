@@ -72,7 +72,20 @@ For this project we use the Neo4j database. To use the app you will need to setu
 2) Once Neo4j has finished installing, run it and click New > Create project. The name of the project is not important
 3) In the top right side of the screen, click Add > Local DBMS
 4) Leave the name of the database the same. The way that Node-View communicates with the frontend requires that the password be setup in the application. We have coded the frontend to use the password "password"
-5) Enable APOC by clicking on the databse > plugins > install APOC
+5) After the database has finished loading, enable APOC by clicking on the databse > plugins > APOC > install APOC
 6) Once the database has finished setting up start the server and click open
 ## Step Two: Importing  the data (Automatic Method)
 To setup manually, skip [here]()
+
+Once the database has been setup following the step above, there are two queries that you have to run
+
+First, run
+```CALL apoc.load.json("<PATH TO PROJECT>/frontend/src/data/modified/data_final.json")
+YIELD value
+UNWIND value.data as data
+MERGE (s:Transaction {id: data.id, timestep: data.timestep, group: data.group})
+WITH s, data
+UNWIND data.edges as edge
+MERGE (t:Transaction {id: edge.id, timestep: edge.timestep, group: edge.group})
+MERGE (s)-[:CONNECTED]->(t)
+```
