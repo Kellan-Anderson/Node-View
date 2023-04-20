@@ -23,7 +23,7 @@ For this project we use the Neo4j database. To use the app you will need to setu
 5) After the database has finished loading, enable APOC by clicking on the databse > plugins > APOC > install APOC
 6) Once the database has finished setting up start the server and click open
 ## Step Two: Importing  the data (Automatic Method)
-To setup manually, skip [here]()
+To setup manually, skip [here](#manual-method)
 
 Once the database has been setup following the step above, there are two queries that you have to run
 
