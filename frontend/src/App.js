@@ -5,8 +5,7 @@ import BarSelector from './containers/BarSelector';
 import { useReadCypher } from 'use-neo4j';
 import Search from './components/Search';
 import ObserverContext from './context/ObserverContext';
-import { Select, MenuItem, InputLabel } from '@mui/material';
-import Bar from './components/barchart';
+import { Select, MenuItem } from '@mui/material';
 import BarWrapper from './containers/BarWrapper';
 
 /**
@@ -17,18 +16,17 @@ import BarWrapper from './containers/BarWrapper';
  */
 
 function App() {
-  // Debugging
-  //console.clear();
-
+  // Used to keep track of the timestep
   const [timestep, setTimestep] = useState(1);
+  // Used to keep track of what node has been clicked on
   const [clickedNode, setClickedNode] = useState(0);
+  // Used to keep track of what meta-data is displayed with the force directed graph
   const [graph, setGraph] = useState('Pie');
-  const handleGraph = (event) => {
-	  setGraph(event.target.value);
-  }
 
+  // Gets functions required for the observer design pattern using React's context API
   const { registerSubscriber, alertSubscriber } = useContext(ObserverContext);
 
+  // Registers a callback function with the observer
   registerSubscriber((alertObject) => {
     alertObject.timestep && setTimestep(alertObject.timestep);
     setClickedNode(alertObject.id);
@@ -37,19 +35,14 @@ function App() {
   // Constants used for talking to the database
   const key = "{nodes: nodes, links: links}";
   
+  // Takes a timestep and builds a query to get the data from the database
   const getQuery = (v) => {
     const query = `match (n:Transaction {timestep: "${v}"}), ` +
                   `(a:Transaction {timestep: "${v}"})-[]->(b:Transaction {timestep: "${v}"}) ` +
                   "WITH COLLECT(DISTINCT {id: n.id, group: n.group}) as nodes, " + 
-                  "COLLECT(DISTINCT {source: a.id, target: b.id}) as links RETURN {nodes: nodes, links: links}";
-    //console.log(query);
+                  `COLLECT(DISTINCT {source: a.id, target: b.id}) as links RETURN ${key}`;
     
     return query;
-    /*
-    MATCH (n:Transaction {timestep: "1"}), (a:Transaction {timestep: "1"})-[]->(b:Transaction {timestep: "1"})
-    WITH COLLECT(DISTINCT {id: n.id, group: n.group}) as nodes, COLLECT(DISTINCT {source: a.id, target: b.id}) as links
-    RETURN {nodes: nodes, links: links}
-    */
   };
 
   // Get the query
@@ -64,53 +57,16 @@ function App() {
     run({query});
   }, [timestep]);
 
-  // Default result of the database
-  let result = (<div>Data not loaded</div>);
-  
   // Init our data
-  let data = {};
-  
-  const handleCircleClick = (id) => {
-    setClickedNode(id);
-    alertSubscriber({
-      id: parseInt(id),
-      timestep: undefined,
-      source: "graph"
-    })
-  }
+  let data = undefined;
 
   // Check to see if the data has been assigned by the database yet
   if(records === undefined) {
     console.log("Records is undefined");
   }
   else {
-    /* New code */
+    // If the data has finished retreiving from the database, assign it to the data variable
     data = records[0].get(key);
-
-    // Pass the data to our graph component
-    result = (
-      <div className='grid grid-cols-3 w-full h-full'>
-        <div className='col-span-2'>
-          <Graph data={data} highlight={clickedNode} nodeClick={handleCircleClick}/>
-        </div>
-        <div className='flex flex-col mr-2 pl-2 border-l-2 border-dashed border-l-black'>
-          <div className='grow py-2'>
-            {graph === 'Bar' && <BarWrapper timestep={timestep} />}
-            {graph === 'Pie' && <Pie data={data.nodes} />}
-            {/* graph === "Force-directed" &&  */}
-          </div>
-          <Select labelId="graph_type_label"
-    	  	  id="graph_type"
-    	          value={graph}
-    	  	  onChange={handleGraph}
-          >
-    	      <MenuItem value={"Bar"}>Bar Graph</MenuItem>
-    	      <MenuItem value={"Pie"}>Pie Chart</MenuItem>
-    	      {/*<MenuItem value={"Force-directed"}>Force-directed Graph</MenuItem>*/}
-  	      </Select>
-        </div>
-      </div>
-    );
   }
   
   // Runs whenever the slider is moved
@@ -118,20 +74,69 @@ function App() {
     setTimestep(parseInt(value));
   }
 
+  // Runs when a bar chart has been clicked on
   const handleBarClick = (v) => {
     setTimestep(parseInt(v));
+  }
+
+  // Handles the change of the dropdown
+  const handleGraph = (event) => {
+	  setGraph(event.target.value);
+  }
+
+  // Handles a click event on a node in the graph
+  const handleCircleClick = (id) => {
+    // Update the clicked node
+    setClickedNode(id);
+
+    // Call all of the callbacks registered in the observer context with the id, timestep and source
+    alertSubscriber({
+      id: parseInt(id),
+      timestep: undefined,
+      source: "graph"
+    })
   }
 
   return (
     <>
       <div className='grid grid-rows-5 h-screen'>
         <div className='row-span-4'>
-          {result}
+          {
+          /* 
+          Check to make sure the data has loaded
+          If the data has loaded render the result
+          Else, tells the user that the data has not loaded yet 
+          */
+          }
+          {data ? 
+            <div className='grid grid-cols-3 w-full h-full'>
+
+              {/* Graph component, shows the force directed graph */}
+              <div className='col-span-2'>
+                <Graph data={data} highlight={clickedNode} nodeClick={handleCircleClick}/>
+              </div>
+              
+              {/* Dropdown */}
+              <div className='flex flex-col mr-2 pl-2 border-l-2 border-dashed border-l-black'>
+                <div className='grow py-2'>
+                  {graph === 'Bar' && <BarWrapper timestep={timestep} />}
+                  {graph === 'Pie' && <Pie data={data.nodes} />}
+                </div>
+                <Select labelId="graph_type_label"
+                  id="graph_type"
+                  value={graph}
+                  onChange={handleGraph}
+                >
+                  <MenuItem value={"Bar"}>Bar Graph</MenuItem>
+                  <MenuItem value={"Pie"}>Pie Chart</MenuItem>
+                </Select>
+              </div>
+            </div>
+          : <div>Data not loaded</div>
+          }
         </div>
-
-        
-
         <div className='flex flex-col items-center'>
+          {/* Slider */}
           <div className='flex flex-row h-fit w-full mt-2 pt-2 border-t-2 border-black'>
             <button
               onClick={(e) => {timestep > 1 && setTimestep(parseInt(timestep) - 1)}}
@@ -157,8 +162,10 @@ function App() {
           </div>
           <p>Timestep: {timestep}</p>
         </div>
+        {/* Search component */}
         <Search />
       </div>
+      {/* Bar selector, shows the barcharts for each timestep */}
       <BarSelector highlighted={timestep} clickFunction={handleBarClick} />
     </>
   );

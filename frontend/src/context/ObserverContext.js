@@ -1,27 +1,55 @@
+/**
+ * @author Adian Kirk
+ * @author Kellan Anderson
+ * Observer context for the application, manages subscribers and notifications
+ */
+
 import React, { createContext, useRef } from "react";
 
+// Create and export our context
 const ObserverContext = createContext();
 export default ObserverContext;
 
+/**
+ * Provider for the context API, holds the array of callback functions and the nesseary functions required to register 
+ * and notify a subscriber
+ * @param children The children to render inside of the context
+ * @returns A context API
+ */
 export function ObserverProvider({children}) {  
   
+  // Init the callbacks array. Uses reacts useRef hook since when we change data it does not cause a re-render
   const observerCallbacks = useRef([]);
 
+  /**
+   * Adds a callback function to the list of subscribers to notify. Takes a function passed in by the subscriber to be 
+   * called later
+   * @param callback The function to be run when the subscriber is notified 
+   */
   const registerSubscriber = (callback) => {
+    // Adds the callback function to the list of \
     observerCallbacks.current = [...observerCallbacks.current, callback];
   }
 
+  /**
+   * Calls each callback function registered in the subscriber list
+   * @param alertObject Object to call the callback functions with
+   */
   const alertSubscriber = (alertObject) => {
+    // Loop over the functions that have been subscribed with
     observerCallbacks.current.forEach((callback) => {
+      // Call the callback
       callback(alertObject);
     });
   }
 
+  // Assign the functions to an object to be destructured
   const contextFunctions = {
     registerSubscriber,
     alertSubscriber,
   }
 
+  // Return the provider for the observer context
   return (
     <ObserverContext.Provider value={contextFunctions} >
       {children}
@@ -54,10 +82,4 @@ The register function should take an object as an argument in the following type
   timestep: number,
   source?: string
 }
-
-
-IDEA:
-  Separate node searching into its own hook that returns a full node object. This way any component should be able to 
-  look for a node with having to pass a found node around several components. Another option is to use the context to 
-  hold the selected node and any components should be able to see the node using the context api
 */

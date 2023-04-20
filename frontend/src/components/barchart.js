@@ -1,22 +1,36 @@
+/**
+ * @author Adian Kirk
+ * @author Kellan Anderson
+ * D3 funtion for dispalying a barchart
+ */
 import React from "react";
 import useD3 from "../hooks/useD3";
 import * as d3 from 'd3';
 import getColor from "../helper/color";
 
+/**
+ * Defines the componet for a barchart. Does not load data and it is required for it to be in a container to render 
+ * accurate data
+ * @param data The data to render
+ * @returns A barchart JSX component
+ */
 const Bar = ({ data }) => {
+    // Calls the useD3 hook to render the component
     const ref = useD3(
         (svg) => {
+            // DEfine our margins
             const margin = {top: 30, right: 30, bottom: 70, left: 60};
-            //const width = 300;
-            //const height= 400;
 
+            // Get the wrapping containers size
             const dimensions = d3.select(".bar-container").node().getBoundingClientRect();
             // Constants used by the SVG
             const height = dimensions.height;
             const width = dimensions.width;
 
+            // Clear the display
             svg.selectAll("*").remove();
 
+            // Set the barcharts width, height and position
             svg
                 .attr("width", width)
                 .attr("height", height)
@@ -25,12 +39,13 @@ const Bar = ({ data }) => {
                       `translate(${margin.left},${margin.top})`
                 );
 
-            // X axis
+            // Set the X axis
             const x_axis = d3
                 .scaleBand()
                 .range([0, width])
                 .domain(data.map(d => d.group))
             
+            // Apply the x axis to the svg
             svg
                 .selectAll("path")
                 .append("g")
@@ -40,18 +55,19 @@ const Bar = ({ data }) => {
                 .attr("transform", "translate(-10,0) rotate(-45)")
                 .style("text-anchor", "end");
             
-            // Y axis
+            // Set the Y axis
             const y_axis = d3
                 .scaleLinear()
                 .domain([0, 50])
                 .range([0, height]);
-               
+              
+            // Apply the y axis to the svg
             svg
                 .selectAll("path")
                 .append("g")
                 .call(d3.axisLeft(y_axis));
                
-            // Bars
+            // Set the bars and apply it to the svg
             svg
                 .selectAll(".barchart")
                 .data(data)
@@ -63,13 +79,16 @@ const Bar = ({ data }) => {
                 .attr("height", (d) => {
                     return y_axis(d.value);
                 })
+                // Colors the bars according to the groups
                 .attr("fill", (d) => getColor(d.group) );
         },
+        // Data to watch for a change
         [data]
     )
     
     return (
         <div className="bar-container h-full">
+            {/* SVG to render the chart in */}
             <svg
                 ref={ref}
                 className="barchart"

@@ -1,16 +1,26 @@
+/**
+ * @author Adian Kirk
+ * @author Kellan Anderson
+ * Pie chart component for the application
+ */
 import useD3 from "../hooks/useD3";
 import React from "react";
 import * as d3 from 'd3';
 import getColor from "../helper/color.js";
 
+/**
+ * Pie chart component for the application
+ * @param Data The data to render the chart with
+ * @returns 
+ */
 const Pie = ({ data }) => {
     const ref = useD3(
         (svg) => {
             
             // Set dimensions and margins
             const dimensions = d3.select(".pieTin").node().getBoundingClientRect();
-            console.log(d3.select(".pieTin"))
 
+            // Sets the height and widths as well as margins
             const height = dimensions.height;
             const width = dimensions.width;
             const margin = 40
@@ -18,16 +28,19 @@ const Pie = ({ data }) => {
             // Adjust radius to fit inside react page
             const radius = Math.min(width, height) / 2 - margin
 
+            // Sets the aspect ratio so that it is responsive
             svg
                 .attr("preserveAspectRatio", "xMinYMin meet")
                 .attr("viewBox", `0 0 ${width} ${height}`);
 
+            // Sets a "skeleton" data object for D3 to render
             const ratioData = [
                 {label: "illicit", value: 0, group: 1},
                 {label: "licit", value: 0, group: 2},
                 {label: "unknown", value: 0, group: 3},
             ]
             
+            // Loop over the data passed and update the ratio data
             data.forEach(node => {
                 if(node.group === "1") {
                     ratioData[0].value++;
@@ -40,6 +53,7 @@ const Pie = ({ data }) => {
                 }
             });
 
+            // Clears the display
             svg.selectAll("*").remove();
 
             // Append svg object to the page divider
@@ -48,8 +62,6 @@ const Pie = ({ data }) => {
                 .attr("height", height)
                 .append("g")
                 .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-            // Refreshes the chart for each timestep
 
             // Give each part of the pie a value
             var pieGen = d3.pie()

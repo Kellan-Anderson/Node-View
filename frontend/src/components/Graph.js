@@ -1,8 +1,6 @@
 import useD3 from "../hooks/useD3";
 import * as d3 from 'd3';
 import getColor from "../helper/color";
-import { useContext } from "react";
-import ObserverContext from "../context/ObserverContext";
 import "./graph.css";
 
 /**
@@ -12,13 +10,10 @@ import "./graph.css";
  */
 const Graph = ({data, highlight, nodeClick}) => {
 
-  const { registerSubscriber } = useContext(ObserverContext);
-
-
-
   const ref = useD3(
     (svg) => {
 
+      // Get the parent elements dimentions
       const dimensions = d3.select(".graphContainer").node().getBoundingClientRect();
       // Constants used by the SVG
       const height = dimensions.height;
@@ -60,7 +55,7 @@ const Graph = ({data, highlight, nodeClick}) => {
           event.subject.fy = null;
         }
 
-        // Defines our links on the screen
+        // Defines our links (edges) on the screen
         const link = svg
           .append("g")
           .attr("class", "links")
@@ -105,6 +100,9 @@ const Graph = ({data, highlight, nodeClick}) => {
         else if(direction === "y") return value > height ? height : value;
       }
 
+      /**
+       * Ticked function, defines what happens to the nodes as the simulation "ticks"
+       */
       const ticked = () => {
         link
           .attr("x1", (d) => limitPosition(d.source.x, "x") )
@@ -126,9 +124,10 @@ const Graph = ({data, highlight, nodeClick}) => {
         .force("link")
         .links(data.links);
       
-      //tot
+      // Calls the clicked node funciton with the specified highlighted node
       clickNode(highlight);
     },
+    // the data to be watched for changes
     [data]
   );
 
@@ -146,9 +145,15 @@ const Graph = ({data, highlight, nodeClick}) => {
 
 export default Graph;
 
+/**
+ * Clicked node function, highlights a specific node based off of the id of each node
+ * @param {*} id 
+ */
 function clickNode(id) {
+  // Resets all the nodes in the graph and set them to the correct size and color
   d3.selectAll('circle').attr('fill', (d) => getColor(d.group)).attr('r', 7);
+  // Sets the node with a given ID with a bigger radius and colors it magenta so it stands out
   if(id) {
-    d3.select(`#node${id}`).attr('fill', 'black').attr('r', 9);
+    d3.select(`#node${id}`).attr('fill', 'rgb(255, 0, 255)').attr('r', 9);
   }
 }
